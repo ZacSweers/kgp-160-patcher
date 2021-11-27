@@ -7,7 +7,8 @@ Note that other patches may be added to this in the future. This namely targets 
 performance regression in 1.6.0.
 
 This dependency works as a "monkeypatch", which is to say it relies on a Gradle classpath trick to force use of its 
-patched versions of files fixed in the aforementioned patch PRs.
+patched versions of files fixed in the aforementioned patch PRs. Effectively, it is just the KGP plugin jar + the 
+contents of those PRs.
 
 ## Usage
 
