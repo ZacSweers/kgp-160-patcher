@@ -4,24 +4,22 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: JDK ${{ matrix.ci_java_version }} | Kotlin ${{ matrix.ci_kotlin_version }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        ci_java_version: [8]
-        ci_kotlin_version: [1.6.0]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1
-      - name: Install JDK ${{ matrix.ci_java_version }}
+      - name: Install JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: ${{ matrix.ci_java_version }}
+          java-version: '8'
       - name: Build with Gradle
-        run: ./gradlew clean check --stacktrace -Pkotlin_version=${{ matrix.ci_kotlin_version }}
+        run: ./gradlew clean check --stacktrace
       - name: Upload snapshot (main only)
-        if: success() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && matrix.ci_kotlin_version == '1.6.0'
-        run: ./gradlew publish -x dokkaHtml --no-parallel -PmavenCentralUsername=${{ secrets.SONATYPEUSERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPEPASSWORD }}
+        if: success() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: '${{ secrets.SONATYPEUSERNAME }}'
+          ORG_GRADLE_PROJECT_mavenCentralPassword: '${{ secrets.SONATYPEPASSWORD }}'
